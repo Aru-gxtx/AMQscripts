@@ -6,7 +6,9 @@
 // @author       Aruu☆
 // @match        https://animemusicquiz.com/*
 // @match        https://*.animemusicquiz.com/*
-// @icon         https://www.google.com/s2/favicons?sz=64&domain=animemusicquiz.com
+// @downloadURL  https://github.com/Aru-gxtx/AMQscripts/raw/main/AMQ_shortest_answer.user.js
+// @updateURL    https://github.com/Aru-gxtx/AMQscripts/raw/main/AMQ_shortest_answer.user.js
+// @require      https://github.com/joske2865/AMQ-Scripts/raw/master/common/amqScriptInfo.js
 // @grant        none
 // ==/UserScript==
 
@@ -17,6 +19,7 @@
     const MAX_SEARCH_LENGTH = 10;
 
     const shift_keys = ["!", "\"", "#", "$", "%", "&", "'", "(", ")", "=", "~", "|", "`", "{", "}", "+", "*", ":", "<", ">", "?","_"];
+    const paste_keys = ["★","☆","·","♥","・","〜","†","×","♪","→","␣"];
     let total_len = 0;
     let best_len = 0;
 
@@ -83,7 +86,12 @@
         best_len = normalizedList.reduce((max, entry) => Math.max(max, entry.length), 0);
 
         for (const entry of normalizedList) {
-            if (shift_keys.some((key) => entry.includes(key))) {
+            const hasPaste = paste_keys.some((key) => entry.includes(key));
+            const hasShift = shift_keys.some((key) => entry.includes(key));
+
+            if (hasPaste) {
+                total_len += 2;
+            } else if (hasShift) {
                 total_len += 1;
             }
         }
@@ -114,15 +122,21 @@
 
         let best = '';
         let bestSource = '';
+        let bestLength = Number.POSITIVE_INFINITY;
 
         for (const candidate of candidates) {
             if (!candidate || candidate.length > MAX_SEARCH_LENGTH) continue;
             if (!suggestions.some((suggestion) => suggestion.includes(candidate))) continue;
 
             const candidateSource = names.find((name) => normalizeForSearch(name).includes(candidate));
-            if (candidate.length < best.length || (candidate.length === best.length && (!bestSource || String(candidateSource || '').length < String(bestSource || '').length))) {
+            const isShorter = candidate.length < bestLength;
+            const isTie = candidate.length === bestLength && (!bestSource || String(candidateSource || '').length < String(bestSource || '').length);
+
+            if (isShorter || isTie) {
                 best = candidate;
                 bestSource = candidateSource || bestSource;
+                bestLength = candidate.length;
+                best_len = bestLength;
             }
         }
 
