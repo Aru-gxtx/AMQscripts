@@ -153,10 +153,11 @@
             if (!candidate || candidate.length > MAX_SEARCH_LENGTH) continue;
 
             const candidateSuggestions = getSuggestions(candidate);
-            const targetFound = candidateSuggestions.some((suggestion) =>
-                names.some((name) => normalizeForSearch(name) === suggestion)
+            const firstSuggestion = candidateSuggestions[0];
+            const targetFoundFirst = names.some((name) =>
+                normalizeForSearch(name) === firstSuggestion
             );
-            if (!targetFound) continue;
+            if (!targetFoundFirst) continue;
 
             const candidateSource = names.find((name) => normalizeForSearch(name).includes(candidate));
             const isShorter = candidate.length < bestLength;
