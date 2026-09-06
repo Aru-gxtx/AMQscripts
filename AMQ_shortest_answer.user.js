@@ -168,8 +168,7 @@
         const panel = ensurePanel();
         if (!panel) return;
 
-        const names = latestNames.length ? latestNames : ['No names collected'];
-        const answer = latestBest || 'No valid answer yet';
+        const answer = latestBest;
 
         panel.innerHTML = [
             '<div style="font-weight:700; margin-bottom:6px;">Shortest Answer</div>',
