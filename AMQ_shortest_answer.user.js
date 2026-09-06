@@ -99,8 +99,33 @@
         return normalizedList;
     }
 
+    function getSuggestions(search) {
+        const controller = window.quiz &&
+            window.quiz.answerInput &&
+            window.quiz.answerInput.typingInput &&
+            window.quiz.answerInput.typingInput.autoCompleteController;
+
+        if (!controller || !Array.isArray(controller.list)) return [];
+
+        if (typeof window.createAnimeSearchRegexQuery === 'function') {
+            const regex = new RegExp(window.createAnimeSearchRegexQuery(search), 'i');
+            return controller.list
+                .filter((anime) => regex.test(anime))
+                .sort((a, b) => a.length - b.length || (a < b ? -1 : 1))
+                .slice(0, 25)
+                .map((anime) => normalizeForSearch(anime));
+        }
+
+        const normalizedSearch = normalizeForSearch(search);
+        return controller.list
+            .map((anime) => normalizeForSearch(anime))
+            .filter((anime) => anime.includes(normalizedSearch))
+            .sort((a, b) => a.length - b.length || (a < b ? -1 : 1))
+            .slice(0, 25);
+    }
+
     function findShortestAnswer(names) {
-        const suggestions = getAutocompleteSuggestions();
+        getAutocompleteSuggestions();
         if (!names.length) return '';
 
         const seen = new Set();
@@ -126,7 +151,12 @@
 
         for (const candidate of candidates) {
             if (!candidate || candidate.length > MAX_SEARCH_LENGTH) continue;
-            if (!suggestions.some((suggestion) => suggestion.includes(candidate))) continue;
+
+            const candidateSuggestions = getSuggestions(candidate);
+            const targetFound = candidateSuggestions.some((suggestion) =>
+                names.some((name) => normalizeForSearch(name) === suggestion)
+            );
+            if (!targetFound) continue;
 
             const candidateSource = names.find((name) => normalizeForSearch(name).includes(candidate));
             const isShorter = candidate.length < bestLength;
