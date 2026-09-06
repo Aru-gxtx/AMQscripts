@@ -220,6 +220,4 @@
             setupMetadata();
         }, { once: true });
     }
-
-    setupMetadata();
 })();
