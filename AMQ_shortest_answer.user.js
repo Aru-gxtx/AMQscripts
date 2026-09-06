@@ -125,62 +125,17 @@
     }
 
     function findShortestAnswer(names) {
-        getAutocompleteSuggestions();
         if (!names.length) return '';
 
-        const seen = new Set();
-        const candidates = [];
+        const shortestName = names
+            .filter(Boolean)
+            .map((name) => String(name).trim())
+            .filter(Boolean)
+            .sort((a, b) => a.length - b.length || a.localeCompare(b))[0] || '';
 
-        for (const name of names) {
-            const cleaned = normalizeForSearch(name);
-            if (cleaned) {
-                candidates.push(cleaned);
-            }
-
-            for (const substring of getSubstrings(name)) {
-                if (!seen.has(substring)) {
-                    seen.add(substring);
-                    candidates.push(substring);
-                }
-            }
-        }
-
-        let best = '';
-        let bestSource = '';
-        let bestLength = Number.POSITIVE_INFINITY;
-
-        for (const candidate of candidates) {
-            if (!candidate || candidate.length > MAX_SEARCH_LENGTH) continue;
-
-            const candidateSuggestions = getSuggestions(candidate);
-            const firstSuggestion = candidateSuggestions[0];
-            const targetFoundFirst = names.some((name) =>
-                normalizeForSearch(name) === firstSuggestion
-            );
-            if (!targetFoundFirst) continue;
-
-            const candidateSource = names.find((name) => normalizeForSearch(name).includes(candidate));
-            const isShorter = candidate.length < bestLength;
-            const isTie = candidate.length === bestLength && (!bestSource || String(candidateSource || '').length < String(bestSource || '').length);
-
-            if (isShorter || isTie) {
-                best = candidate;
-                bestSource = candidateSource || bestSource;
-                bestLength = candidate.length;
-                best_len = bestLength;
-            }
-        }
-
-        if (!best) {
-            const shortestName = [...names]
-                .map((name) => normalizeForSearch(name))
-                .filter(Boolean)
-                .sort((a, b) => a.length - b.length)[0];
-
-            return shortestName || '';
-        }
-
-        return best;
+        best_len = shortestName.length;
+        total_len = names.length;
+        return shortestName;
     }
 
     function ensurePanel() {
