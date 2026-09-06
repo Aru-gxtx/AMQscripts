@@ -193,9 +193,33 @@
         }
     }
 
+    function setupMetadata() {
+        AMQ_addScriptData({
+            name: 'AMQ Shortest Answer',
+            author: 'Aruu☆',
+            version: '0.1',
+            link: 'https://github.com/Aru-gxtx/AMQscripts',
+            description: `
+                <p>Displays the shortest complete anime name or alternative answer (best for /dd memorization).</p>
+            `
+        });
+
+        AMQ_addStyle(`
+            #amq-shortest-answer-panel {
+                color: white;
+            }
+        `);
+    }
+
     if (window.quiz) {
         setup();
+        setupMetadata();
     } else {
-        window.addEventListener('load', setup, { once: true });
+        window.addEventListener('load', () => {
+            setup();
+            setupMetadata();
+        }, { once: true });
     }
+
+    setupMetadata();
 })();
