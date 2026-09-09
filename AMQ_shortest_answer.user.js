@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         AMQ Shortest Answer
 // @namespace    http://tampermonkey.net/
-// @version      0.1
-// @description  Collect all possible anime names and show the shortest valid answer substring from the current autocomplete list.
+// @version      0.2
+// @description  Displays the least amount of input time (the shortest and fastest) answer at the end of a round. This was created to help me memorize and utilize the optimal answer when playing in `/dd` mode.
 // @author       Aruu☆
 // @match        https://animemusicquiz.com/*
 // @match        https://*.animemusicquiz.com/*
@@ -12,14 +12,29 @@
 // @grant        none
 // ==/UserScript==
 
+/*
+CHANGELOG
+
+v0.2
+> Added calculation for input cost with Japanese 106/109 keyboard layout in mind (my personal keyboard).
+> Updated the answer selection logic to prioritize answers that require the least amount of time to input.
+*/
+
 (function () {
     'use strict';
 
     const PANEL_ID = 'amq-shortest-answer-panel';
     const MAX_SEARCH_LENGTH = 10;
 
-    const shift_keys = ["!", "\"", "#", "$", "%", "&", "'", "(", ")", "=", "~", "|", "`", "{", "}", "+", "*", ":", "<", ">", "?","_"];
+    // const shift_keys = ["!", "\"", "#", "$", "%", "&", "'", "(", ")", "=", "~", "|", "`", "{", "}", "+", "*", ":", "<", ">", "?","_"];
     const paste_keys = ["★","☆","·","♥","・","〜","†","×","♪","→","␣"];
+    const plus1_keys = ["4", "5", "6", "7", "8", "9", "w", "e", "r", "t", "y", "u", "i", "o", "s", "d", "f", "g", "h", "j", "k", "l", "z", "x", "c", "v", "b", "n", "m", ",", ".", " "];
+    const plus2_keys = ["1", "2", "3", "0", "-", "q", "p", "@", "a", ";", ":", "/"];
+    const plus3_keys = ["^", "[", "]", "\\"];
+    const plus3shift_keys = ["$", "%", "&", "'", "(", ")", "<", ">"];
+    const plus4shift_keys = ["!", "\"", "#", "=", "`", "+", "*", "?"];
+    const plus5shift_keys = ["~", "{", "}", "_"];
+    const plus6shift_keys = ["|"];
     let total_len = 0;
     let best_len = 0;
 
@@ -36,6 +51,27 @@
         return String(value || '')
             .toLowerCase()
             .trim();
+    }
+
+    const keyCosts = new Map([
+        ...paste_keys.map((key) => [key, 9]),
+        ...plus6shift_keys.map((key) => [key, 6]),
+        ...plus5shift_keys.map((key) => [key, 5]),
+        ...plus4shift_keys.map((key) => [key, 4]),
+        ...plus3shift_keys.map((key) => [key, 3]),
+        ...plus3_keys.map((key) => [key, 3]),
+        ...plus2_keys.map((key) => [key, 2]),
+        ...plus1_keys.map((key) => [key, 1])
+    ]);
+
+    function getInputCost(value) {
+        let cost = 0;
+
+        for (const character of normalizeForSearch(value)) {
+            cost += keyCosts.get(character) || 1;
+        }
+
+        return cost;
     }
 
     function getSubstrings(value, maxLength = MAX_SEARCH_LENGTH) {
@@ -82,19 +118,11 @@
         if (!controller || !Array.isArray(controller.list)) return [];
 
         const normalizedList = controller.list.map((entry) => normalizeForSearch(entry));
-        total_len = normalizedList.length;
-        best_len = normalizedList.reduce((max, entry) => Math.max(max, entry.length), 0);
-
-        for (const entry of normalizedList) {
-            const hasPaste = paste_keys.some((key) => entry.includes(key));
-            const hasShift = shift_keys.some((key) => entry.includes(key));
-
-            if (hasPaste) {
-                total_len += 2;
-            } else if (hasShift) {
-                total_len += 1;
-            }
-        }
+        // const hasShift = shift_keys.some((key) => entry.includes(key));
+        total_len = normalizedList.reduce((sum, entry) => sum + getInputCost(entry), 0);
+        best_len = normalizedList.length
+            ? Math.min(...normalizedList.map((entry) => getInputCost(entry)))
+            : 0;
 
         return normalizedList;
     }
@@ -131,9 +159,9 @@
             .filter(Boolean)
             .map((name) => String(name).trim())
             .filter(Boolean)
-            .sort((a, b) => a.length - b.length || a.localeCompare(b))[0] || '';
+            .sort((a, b) => getInputCost(a) - getInputCost(b) || a.length - b.length || a.localeCompare(b))[0] || '';
 
-        best_len = shortestName.length;
+        best_len = getInputCost(shortestName);
         total_len = names.length;
         return shortestName;
     }
@@ -197,10 +225,10 @@
         AMQ_addScriptData({
             name: 'AMQ Shortest Answer',
             author: 'Aruu☆',
-            version: '0.1',
-            link: 'https://github.com/Aru-gxtx/AMQscripts',
+            version: '0.2',
+            link: 'https://github.com/Aru-gxtx/AMQscripts/raw/main/AMQ_shortest_answer.user.js',
             description: `
-                <p>Displays the shortest complete anime name or alternative answer (best for /dd memorization).</p>
+                <p>Displays the least amount of input time (the shortest and fastest) answer at the end of a round. This was created to help me memorize and utilize the optimal answer when playing in `/dd` mode.</p>
             `
         });
 
