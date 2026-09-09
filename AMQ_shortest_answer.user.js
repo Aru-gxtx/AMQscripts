@@ -223,12 +223,12 @@ v0.2
 
     function setupMetadata() {
         AMQ_addScriptData({
-            name: 'AMQ Shortest Answer',
+            name: 'Shortest Answer',
             author: 'Aruu☆',
             version: '0.2',
             link: 'https://github.com/Aru-gxtx/AMQscripts/raw/main/AMQ_shortest_answer.user.js',
             description: `
-                <p>Displays the least amount of input time (the shortest and fastest) answer at the end of a round. This was created to help me memorize and utilize the optimal answer when playing in `/dd` mode.</p>
+                <p>Displays the least amount of input time (the shortest and fastest) answer at the end of a round. This was created to help me memorize and utilize the optimal answer when playing in \`/dd\` mode.</p>
             `
         });
 
