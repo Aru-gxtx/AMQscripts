@@ -11,15 +11,26 @@ This repository is a collection of my personal scripts for the game [Anime Music
 AMQ Shortest Answer displays the least amount of input time _(the shortest and fastest)_ answer at the end of a round. This was created to help me memorize and utilize the optimal answer when playing in no `/dd` mode _(particularly when the guess time is <7s where it matters)._
 
 <details>
-<summary>How it works?</summary>
+<summary><b>How it works?</b></summary>
 
-This script collects available anime title variations, such as english, romaji, native, and alternative titles.
+This script collects all available anime title variations, such as english, romaji, native, and alternative titles.
 
 Next, based on the layout of characters on a Japanese 106/109 keyboard, it assign an estimated cost for typing each character _(please note that this is merely a personal approximation and not a figure derived from a formal typing study; I intend to update these values ​​should I come across researchs regarding _how finger positioning affects typing speed_ (or something similar))._
+
+<img width="800" height="357" alt="image" src="https://github.com/user-attachments/assets/9717d7b9-d3ce-4660-8abf-d42beafd14ae" />
 
 For the Shift key or characters requiring the Shift key for input, an automatic +2 is added-in addition to the count based on keyboard layout _(as the Shift key itself falls into the +2 category)._ Consequently, the total comes to +3 in the best-case scenario and +6 in the worst-case scenario.
 
 For the Paste keys or characters that are not directly assigned to the keyboard _(without modifying key bindings)._ Using `Ctrl+V` alone incurs a +3 count; furthermore, a mouse action is also required to place the cursor to the pinned chat _(in no `/dd` games when paste keys are pinned in the chat area)._ Anyone would naturally prefer an easier input method if available, so this action has been assigned a +9 count.
 
 After that, the script selects the title with the lowest total estimated input cost and displays it in the side panel.
+
+**Example Usage:**
+
+<img width="577" height="407" alt="image" src="https://github.com/user-attachments/assets/4f0e7deb-5828-4a03-9f45-7c1e3b355221" />
+
+* "Made in Abyss: Fukaki Tamashii no Reimei": 41 characters, 48 input cost
+* "Made in Abyss: Dawn of the Deep Soul": 37 characters, 43 input cost
+
+Output: "Made in Abyss: Dawn of the Deep Soul"
 </details>
