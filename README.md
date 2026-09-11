@@ -1,4 +1,4 @@
-# Aruu☆ AMQ Scripts
+# Aruu☆'s AMQ Scripts
 
 [![License](https://img.shields.io/github/license/Aru-gxtx/AMQscripts)](LICENSE)
 [![Last Commit](https://img.shields.io/github/last-commit/Aru-gxtx/AMQscripts)](https://github.com/Aru-gxtx/AMQ_shortest_answer/commits/main)
